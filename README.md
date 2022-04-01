@@ -33,3 +33,4 @@ cd Downloads
 python odt.hyperAVH.py mon_AVH.odt
 ```
 Par défaut, le script renvoit le nombre de paragraphes présents dans l'AVH.
+Un fichier préfixé de **new_** est alors créé dans le répertoire courant. C'est ce fichier qui contient les hyperliens, votre fichier de départ n'a pas été modifié.
