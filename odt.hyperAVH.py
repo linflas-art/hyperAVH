@@ -135,8 +135,8 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
 
 # écriture de content.xml et création du nouvel ODT
 tree.write(tempdir + '/content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8')
-if opt == "--debug":
-    tree.write('./content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8', pretty_print=True)
+#if opt == "--debug":
+#    tree.write('./content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8', pretty_print=True)
 shutil.make_archive('new_' + filename,'zip',tempdir,'.')
 shutil.move('new_' + filename + '.zip', 'new_' + filename)
 shutil.rmtree(tempdir)
