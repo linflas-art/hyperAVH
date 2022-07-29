@@ -16,6 +16,7 @@ except IndexError:
     print("Usage: " + sys.argv[0] + " [fichier ODT]")
     quit()
 
+opt = "none"
 try:
     opt = sys.argv[2]
     if opt == "--debug":
@@ -58,6 +59,7 @@ def bookmarks(search,paragraph):
 
 # fonction de création d'un noeud de type "hyperlink"
 def hyperlink (number,tail):
+    #logging.debug(number)
     link = etree.Element(t+'a')
     link.set(x+'type', "simple")
     link.set(x+'href', "#" + str(number))
@@ -135,8 +137,10 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
 
 # écriture de content.xml et création du nouvel ODT
 tree.write(tempdir + '/content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8')
-#if opt == "--debug":
-#    tree.write('./content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8', pretty_print=True)
+if opt == "--debug":
+    tree.write('./content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8', pretty_print=True)
 shutil.make_archive('new_' + filename,'zip',tempdir,'.')
 shutil.move('new_' + filename + '.zip', 'new_' + filename)
-shutil.rmtree(tempdir)
+logging.debug(tempdir)
+if opt != "--debug":
+    shutil.rmtree(tempdir)
