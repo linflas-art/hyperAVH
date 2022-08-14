@@ -9,45 +9,14 @@ import re
 import copy
 import sys
 import logging
+import argparse
 
-try:
-    filename = sys.argv[1]
-except IndexError:
-    print("Usage: " + sys.argv[0] + " [fichier ODT]")
-    quit()
+# -------- functions --------
 
-opt = "none"
-try:
-    opt = sys.argv[2]
-    if opt == "--debug":
-        logging.basicConfig(level=logging.DEBUG)
-except IndexError:
-    pass
-    
-# extraction et parsing du document.xml
-tempdir = tempfile.mkdtemp()
-with ZipFile(filename, 'r') as zip:
-    zip.extractall(tempdir)
-tree = etree.parse(tempdir + '/content.xml')
-root = tree.getroot()
-nsmap = root.nsmap
-t = '{' + nsmap['text'] + '}'
-x = '{' + nsmap['xlink'] + '}'
-
-# on quitte s'il y a déjà des hyperliens
-links = []
-for h in tree.iter(t+'a'):
-    links.append(h)
-if links:
-    print('Supprimez les liens existants :')
-    for h in links:
-        print(h.getparent().text + h.text)
-    quit()
-
-# fonction de création de noeuds de type "bookmark"
+# create 'bookmark' node
 def bookmarks(search,paragraph):
     for n in tree.iter(search):
-        #if n.text == str(paragraph) or n.xpath("text()") == [str(paragraph)]:
+        #if n.text == str(paragraph) auor n.xpath("text()") == [str(paragraph)]:
         if ''.join(n.itertext()) == str(paragraph):
             bkm = etree.Element(t+'bookmark')
             bkm.set(t+'name', str(paragraph))
@@ -57,8 +26,8 @@ def bookmarks(search,paragraph):
             paragraph += 1
     return paragraph
 
-# fonction de création d'un noeud de type "hyperlink"
-def hyperlink (number,tail):
+# create 'hyperlink' node
+def hyperlink(number,tail):
     #logging.debug(number)
     link = etree.Element(t+'a')
     link.set(x+'type', "simple")
@@ -69,7 +38,51 @@ def hyperlink (number,tail):
     link.tail = tail
     return link
 
-# Création des signets dans les noeuds "heading", puis les "paragraph"
+# -------- args --------
+
+parser = argparse.ArgumentParser(description="hyperAVH - hyperliens pour Aventure dont Vous êtes le Héros - is a tool that automatically adds internal hyperlinks in your gamebook by finding 'turn to' expressions. It works only with Open/LibreOffice documents.")
+parser.add_argument("filename", help="the name of your *ODT* file to be processed")
+parser.add_argument("--EN", action="store_true", help="find english 'turn to' expressions instead of french ones")
+parser.add_argument("--debug", action="store_true", help="turn on DEBUG logging (for developers)", )
+args = parser.parse_args()
+
+if args.EN:
+    turn_to_regexp = "([\s\(][Tt]urn[ing]*\s+to\s+)(\d+)"
+    remove_links_message = "Please remove existing hyperlinks from document:"
+else:
+    turn_to_regexp = "([\s\(]au\s+)(\d+)"
+    remove_links_message = "Veuillez supprimer les hyperliens existants du document :"
+
+if args.debug:
+    logging.basicConfig(level=logging.DEBUG)
+
+filename = args.filename
+if filename.startswith('./') or filename.startswith('.\\'):
+    filename = filename[2:]
+
+# -------- main --------
+
+# extract archive and parse content.xml
+tempdir = tempfile.mkdtemp()
+with ZipFile(filename, 'r') as zip:
+    zip.extractall(tempdir)
+tree = etree.parse(tempdir + '/content.xml')
+root = tree.getroot()
+nsmap = root.nsmap
+t = '{' + nsmap['text'] + '}'
+x = '{' + nsmap['xlink'] + '}'
+
+# quit if hyperlinks are already present
+links = []
+for h in tree.iter(t+'a'):
+    links.append(h)
+if links:
+    print(remove_links_message)
+    for h in links:
+        print(h.getparent().text + h.text)
+    quit()
+
+# create bookmarks into 'heading' nodes, then 'paragraph' nodes
 paragraph = 1
 search = t + 'h'
 paragraph = bookmarks(search, paragraph)
@@ -77,22 +90,22 @@ search = t + 'p'
 paragraph = bookmarks(search, paragraph)
 print(paragraph - 1)
 
-# Création des renvois
+# create turn to's
 for p in tree.iter(t+'p'): # noeud "paragraph"
     numbers = []
     txt = ''.join(p.itertext()) # p.xpath("text()"):
     logging.debug(txt)
-    for m in re.finditer("([\s\(]au\s+)(\d+)",txt):
-        au_ = m.group(1)
+    for m in re.finditer(turn_to_regexp,txt):
+        turn_to = m.group(1)
         number = m.group(2)
         numbers.append(number)
 
-    # on modifie le noeud "p" s'il y a renvoi
+    # update 'p' node if turn_to found
     if numbers:
-        # on commence par la fin
+        # reverse processing
         for number in reversed(numbers):
             logging.debug("RENVOI = "+number)
-            # traitement sur les sous-elements s'il y a lieu
+            # process child elements if needed
             for c in p.findall('.//'):
                 #logging.debug(c)
                 #logging.debug("c = " + etree.tostring(c).decode('utf-8'))
@@ -118,10 +131,10 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                         if before or after:
                             c.insert(0,link)
                             c.text = before
-                        else: # si le node ne contient que le numero, on le remplace par l'hyperlien
+                        else: # if node contains just the number, replace it by the hyperlink
                             link.tail = c.tail
                             c.getparent().replace(c,link)
-            # traitement directement sur le texte du noeud "p" s'il y a lieu
+            # process on 'p' node text directly if needed
             if p.text:
                 logging.debug("pTEXT = "+p.text)
                 if number in p.text:
@@ -135,12 +148,13 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
         
         logging.debug("p = " + etree.tostring(p).decode('utf-8'))
 
-# écriture de content.xml et création du nouvel ODT
+# write content.xml and build new ODT
 tree.write(tempdir + '/content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8')
-if opt == "--debug":
+if args.debug:
     tree.write('./content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8', pretty_print=True)
 shutil.make_archive('new_' + filename,'zip',tempdir,'.')
 shutil.move('new_' + filename + '.zip', 'new_' + filename)
 logging.debug(tempdir)
-if opt != "--debug":
+if not args.debug:
     shutil.rmtree(tempdir)
+ 
