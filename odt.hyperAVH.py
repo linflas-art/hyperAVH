@@ -47,7 +47,7 @@ parser.add_argument("--debug", action="store_true", help="turn on DEBUG logging 
 args = parser.parse_args()
 
 if args.EN:
-    turn_to_regexp = "([\s\(][Tt]urn[ing]*\s+to\s+)(\d+)"
+    turn_to_regexp = "([Tt]urn[ing]*\s+to\s+)(\d+)"
     remove_links_message = "Please remove existing hyperlinks from document:"
 else:
     turn_to_regexp = "([\s\(]au\s+)(\d+)"
@@ -157,4 +157,4 @@ shutil.move('new_' + filename + '.zip', 'new_' + filename)
 logging.debug(tempdir)
 if not args.debug:
     shutil.rmtree(tempdir)
- 
+    
