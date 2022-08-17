@@ -1,36 +1,36 @@
 # hyperAVH
-Ajout d'hyperliens au sein d'une AVH (Aventure dont Vous êtes le Héros)
-## Prérequis
-### Un terminal
-- sous Linux, n'importe quel terminal shell fera l'affaire
-- sous Windows, utiliser Powershell (Menu Démarrer > Windows Powershell)
+Adds inner hyperlink in your gamebook (AVH = Aventure dont Vous êtes le Héros)
+## Prerequisites
+### A terminal
+- on Linux, any terminal shell will do the job
+- on Windows, use Powershell (Start > Windows Powershell)
 ### Python (version 3)
-- sur n'importe quelle version de Linux récente, python 3 est généralement déjà disponible
-- sur Windows 10/11, taper dans Powershell la commande :
+- on any recent Linux distribution, python 3 is already installed
+- on Windows 10/11, type in Powershell:
 ```
 python
 ```
-Cela va lancer le Microsoft Store et vous proposer d'installer la dernière version de Python. Pour s'assurer que l'installation est terminée et qu'il s'agit bien de python en version 3, taper la commande (V majuscule) :
+This launchs Microsoft Store and asks you to install the last Python version. To be sure Python version 3 (mandatory) is installed, type below command:
 ```
 python -V
 ```
 ### Lxml
-Il s'agit d'une librairie Python qui permet de simplifier le traitement de fichiers XML et HTML.
-Pour l'installer, il faut exécuter la commande suivante dans un terminal shell ou Powershell sous Windows :
+It's a Python library which simplifies XML and HTML processing.
+To install it, run below command in a shell or Powershell on Windows :
 ```
 pip install lxml
 ```
-## Utilisation
-### AVH au format LibreOffice Writer
-- Télécharger le script **odt.hyperAVH.py**.
-- Copier votre AVH dans le répertoire où se trouve le script.
-- Lancer votre terminal shell ou Powershell et vous placer dans le répertoire du script. Par exemple, si vous êtes sous Windows et que le script est dans vos Téléchargements, il suffit de taper :
+## How to use
+### Gamebook must be saved in LibreOffice Writer format
+- Download script **odt.hyperAVH.py**.
+- Copy your gamebook file in the folder where you downloaded the script.
+- Run a shell terminal ou Powershell and changedir to right location. For example, if you use Windows and the script is located in your Downloads directory, type :
 ```
 cd Downloads
 ```
-- Exécuter le script avec comme argument le nom de votre fichier AVH :
+- Run the script with below options :
 ```
-python odt.hyperAVH.py mon_AVH.odt
+python odt.hyperAVH.py --EN my_gamebook.odt
 ```
-Par défaut, le script renvoit le nombre de paragraphes présents dans l'AVH.
-Un fichier avec le préfixe '**new_**' est alors créé dans le répertoire courant. C'est ce fichier qui contient les hyperliens, votre fichier de départ n'a pas été modifié.
+By default, the script outputs the number of sections in your gamebook when it has completed.
+A file prefixed with '**new_**' has been created in the same directory. That new file contains your gamebook with hyperlinks, your original file has not been modified.
