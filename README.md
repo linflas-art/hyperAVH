@@ -24,7 +24,7 @@ pip install lxml
 ### Gamebook must be saved in LibreOffice Writer format
 - Download script **odt.hyperAVH.py**.
 - Copy your gamebook file in the folder where you downloaded the script.
-- Run a shell terminal ou Powershell and changedir to right location. For example, if you use Windows and the script is located in your Downloads directory, type :
+- Run a shell terminal or Powershell and changedir to right location. For example, if you use Windows and the script is located in your Downloads directory, type :
 ```
 cd Downloads
 ```
