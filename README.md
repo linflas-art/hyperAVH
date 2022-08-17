@@ -1,5 +1,5 @@
 # hyperAVH
-Adds inner hyperlink in your gamebook (AVH = Aventure dont Vous êtes le Héros)
+Adds inner hyperlinks in your gamebook
 ## Prerequisites
 ### A terminal
 - on Linux, any terminal shell will do the job
