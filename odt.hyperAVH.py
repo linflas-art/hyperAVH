@@ -10,6 +10,7 @@ import copy
 import sys
 import logging
 import argparse
+import os
 
 # -------- functions --------
 
@@ -152,8 +153,11 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
 tree.write(tempdir + '/content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8')
 if args.debug:
     tree.write('./content.xml', xml_declaration = True, standalone = "yes", encoding = 'UTF-8', pretty_print=True)
-shutil.make_archive('new_' + filename,'zip',tempdir,'.')
-shutil.move('new_' + filename + '.zip', 'new_' + filename)
+
+output = 'new_' + os.path.basename(filename)
+shutil.make_archive(output,'zip',tempdir,'.')
+shutil.move(output + '.zip', output)
+
 logging.debug(tempdir)
 if not args.debug:
     shutil.rmtree(tempdir)
