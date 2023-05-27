@@ -17,7 +17,7 @@ import argparse
 def bookmarks(search,paragraph):
     for n in tree.iter(search):
         #if n.text == str(paragraph) auor n.xpath("text()") == [str(paragraph)]:
-        if ''.join(n.itertext()) == str(paragraph):
+        if ''.join(n.itertext()).strip() == str(paragraph):
             bkm = etree.Element(t+'bookmark')
             bkm.set(t+'name', str(paragraph))
             n.insert(0,bkm)
