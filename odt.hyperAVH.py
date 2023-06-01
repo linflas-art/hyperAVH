@@ -17,7 +17,6 @@ import os
 # create 'bookmark' node
 def bookmarks(search,paragraph):
     for n in tree.iter(search):
-        #if n.text == str(paragraph) auor n.xpath("text()") == [str(paragraph)]:
         if ''.join(n.itertext()).strip() == str(paragraph):
             bkm = etree.Element(t+'bookmark')
             bkm.set(t+'name', str(paragraph))
@@ -115,7 +114,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                     if number in c.tail:
                         logging.debug("cTAIL! = "+c.tail)
                         i = c.getparent().index(c)
-                        m = re.match("(.*)" + number + "(.*)",c.tail)
+                        m = re.match("(\D*)" + number + "(\D*)",c.tail)
                         before = m.group(1)
                         after = m.group(2)
                         link = hyperlink(number,after) 
@@ -125,22 +124,25 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                     logging.debug("cTEXT = "+c.text)
                     if number in c.text:
                         logging.debug("cTEXT! = "+c.text)
-                        m = re.match("(.*)" + number + "(.*)",c.text)
-                        before = m.group(1)
-                        after = m.group(2)
-                        link = hyperlink(number,after)
-                        if before or after:
-                            c.insert(0,link)
-                            c.text = before
-                        else: # if node contains just the number, replace it by the hyperlink
-                            link.tail = c.tail
-                            c.getparent().replace(c,link)
+                        m = re.match("(\D*)" + number + "(\D*)",c.text)
+                        try: # an AttributeError may happen if number is substring of another (longer) number
+                            before = m.group(1)
+                            after = m.group(2)
+                            link = hyperlink(number,after)
+                            if before or after:
+                                c.insert(0,link)
+                                c.text = before
+                            else: # if node contains just the number, replace it by the hyperlink
+                                link.tail = c.tail
+                                c.getparent().replace(c,link)
+                        except AttributeError:
+                            pass
             # process on 'p' node text directly if needed
             if p.text:
                 logging.debug("pTEXT = "+p.text)
                 if number in p.text:
                     logging.debug("pTEXT! = "+p.text)
-                    m = re.match("(.*)" + number + "(.*)",p.text)
+                    m = re.match("(\D*)" + number + "(\D*)",p.text)
                     before = m.group(1)
                     after = m.group(2)
                     link = hyperlink(number,after)
