@@ -34,3 +34,23 @@ python odt.hyperAVH.py mon_AVH.odt
 ```
 Par défaut, le script renvoit le nombre de paragraphes présents dans l'AVH.
 Un fichier avec le préfixe '**new_**' est alors créé dans le répertoire courant. C'est ce fichier qui contient les hyperliens, votre fichier de départ n'a pas été modifié.
+
+# diagAVH
+Génération d'un diagramme d'AVH (Aventure dont Vous êtes le Héros) à partir d'un document modifié par hyperAVH
+## Prérequis
+### Graphviz
+Il s'agit d'une librairie Python qui permet de créer des diagrammes.
+Pour l'installer, il faut exécuter la commande suivante dans un terminal shell ou Powershell sous Windows :
+```
+pip install graphviz
+```
+## Utilisation
+### Votre AVH doit avoir des repères/hyperliens générés par hyperAVH
+- Exécuter le script avec comme argument le nom de votre fichier AVH :
+```
+python diagAVH.py mon_AVH.odt
+```
+On obtient deux fichiers :
+- mon_AVH.gv : une simple liste des liens entre les paragraphes de votre AVH
+- mon_AVH.gv.svg : le diagramme de votre AVH, que vous pouvez visualiser dans votre navigateur web préféré.
+L'option "--text N" ajoute à chaque noeud du diagramme les N premiers caractères du paragraphe concerné.
