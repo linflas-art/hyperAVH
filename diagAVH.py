@@ -18,6 +18,7 @@ import graphviz
 
 parser = argparse.ArgumentParser(description="creates diagram from your gamebook, based on hyperAVH generated document")
 parser.add_argument("filename", help="the name of your *ODT* file to be processed")
+parser.add_argument("--text", type=int, nargs='?', help="how many characters from section text to be displayed (default 0)")
 parser.add_argument("--debug", action="store_true", help="turn on DEBUG logging (for developers)", )
 args = parser.parse_args()
 
@@ -29,6 +30,7 @@ if filename.startswith('./') or filename.startswith('.\\'):
     filename = filename[2:]
 diagname = filename.replace('odt','gv')
 
+chars = args.text or 0
 # -------- main --------
 
 # extract archive and parse content.xml
@@ -40,7 +42,7 @@ root = tree.getroot()
 nsmap = root.nsmap
 t = '{' + nsmap['text'] + '}'
 
-# quit if hyperlinks or bookmarks are missing or not accurante
+# quit if hyperlinks or bookmarks are missing or not accurate
 lfound=0
 bfound=0
 for l in tree.iter(t+'a'):
@@ -67,11 +69,12 @@ for e in tree.iter():
     # search section number
     if e.tag == t + 'bookmark':
         section = e.get(t+'name')
-        get_next_text = True
+        if chars:
+            get_next_text = True
     # create node and include part of text that follows
     if e.text and get_next_text and e.tag == t + 'p':
         logging.debug(section+":"+e.text)
-        extract = e.text[0:10]
+        extract = e.text[0:chars]
         gvtext = ''.join(char if idx % 25 or idx == 0 else char+'\n' for idx,
               char in enumerate(extract)) + "..."
         dot.node(section,section+"\n"+gvtext)
