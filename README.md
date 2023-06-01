@@ -52,5 +52,5 @@ python diagAVH.py my_gamebook.odt
 ```
 You get two files :
 - **my_gamebook.gv** : a simple list of all linked sections in the gamebook.
-- **my_gamebook.gv.svg** : the graphic diagram of your gamebook, thant you can view in a web browser.
+- **my_gamebook.gv.svg** : the graphic diagram of your gamebook, that you can view in your preferred web browser.
 The option "--text N" adds to each node of the diagram the first N characters of the section text.
