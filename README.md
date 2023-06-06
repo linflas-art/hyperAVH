@@ -35,6 +35,17 @@ python odt.hyperAVH.py --EN my_gamebook.odt
 By default, the script outputs the number of sections in your gamebook when it has completed.
 A file prefixed with '**new_**' has been created in the same directory. That new file contains your gamebook with hyperlinks, your original file has not been modified.
 
+- To randomly shuffle paragraphs :
+```
+python odt.hyperAVH.py --EN my_gamebook.odt --shuffle
+```
+The script returns the new range of your paragraphs as a table of numbers. By default, 1 and last paragraphs remain unchanged. If you're not satisfied with the order, you can re-run the command with this option as many times as you require.
+
+- If you want to shuffle your paragraphs but keep some of them in their original place (in the example, 1, 156, 287, 342 and 400 will be kept):
+```
+python odt.hyperAVH.py --EN my_gamebook.odt --shuffle --keep 1 156 287 342 400
+```
+
 # diagAVH
 Generate a visual diagram from a gamebook previously processed by hyperAVH.
 ## Prerequisites

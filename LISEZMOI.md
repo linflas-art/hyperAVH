@@ -32,8 +32,19 @@ cd Downloads
 ```
 python odt.hyperAVH.py mon_AVH.odt
 ```
-Par défaut, le script renvoit le nombre de paragraphes présents dans l'AVH.
+Par défaut, le script renvoie le nombre de paragraphes présents dans l'AVH.
 Un fichier avec le préfixe '**new_**' est alors créé dans le répertoire courant. C'est ce fichier qui contient les hyperliens, votre fichier de départ n'a pas été modifié.
+
+- Si vous souhaitez mélanger vos paragraphes de manière aléatoire :
+```
+python odt.hyperAVH.py mon_AVH.odt --shuffle
+```
+Le script renvoie le nouvel ordonnancement de vos paragraphes sous forme d'une liste de numéros. Par défaut, le paragraphe 1 et le dernier restent inchangés. Si l'ordre ne vous convient pas, vous pouvez relancer la commande avec cette option autant de fois que vous le souhaitez.
+
+- Si vous souhaitez mélanger vos paragraphes mais garder certains à leur place d'origine (dans l'exemple, les 1, 156, 287, 342 et 400 ne bougeront pas):
+```
+python odt.hyperAVH.py mon_AVH.odt --shuffle --keep 1 156 287 342 400
+```
 
 # diagAVH
 Génération d'un diagramme d'AVH (Aventure dont Vous êtes le Héros) à partir d'un document modifié par hyperAVH
