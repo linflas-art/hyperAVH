@@ -43,7 +43,7 @@ The script returns the new range of your paragraphs as a table of numbers. By de
 
 - If you want to shuffle your paragraphs but keep some of them in their original place (in the example, 1, 156, 287, 342 and 400 will be kept):
 ```
-python odt.hyperAVH.py --EN my_gamebook.odt --shuffle --keep 1 156 287 342 400
+python odt.hyperAVH.py --EN my_gamebook.odt --shuffle --keep 156 287 342
 ```
 
 # diagAVH

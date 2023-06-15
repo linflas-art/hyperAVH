@@ -106,7 +106,7 @@ if args.shuffle:
     new_paragraphs = list(range(1,length+1))
     random.shuffle(new_paragraphs)
     # put back kept paragraphs to their own place
-    kept = args.keep or [1,length]
+    kept = (args.keep or []) + [1, length]
     for k in kept:
         # logging.debug("k="+str(k))
         a = new_paragraphs[k-1] # value at index k
