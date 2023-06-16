@@ -43,7 +43,7 @@ Le script renvoie le nouvel ordonnancement de vos paragraphes sous forme d'une l
 
 - Si vous souhaitez mélanger vos paragraphes mais garder certains à leur place d'origine (dans l'exemple, les 1, 156, 287, 342 et 400 ne bougeront pas):
 ```
-python odt.hyperAVH.py mon_AVH.odt --shuffle --keep 1 156 287 342 400
+python odt.hyperAVH.py mon_AVH.odt --shuffle --keep 156 287 342
 ```
 
 # diagAVH
