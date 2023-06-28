@@ -92,6 +92,8 @@ if links:
         print(h.getparent().text + h.text)
     quit()
 
+bugged_sections = []
+
 # create bookmarks into 'heading' nodes, then 'paragraph' nodes
 paragraph = 1
 search = t + 'h'
@@ -99,26 +101,6 @@ paragraph = bookmarks(search, paragraph)
 search = t + 'p'
 paragraph = bookmarks(search, paragraph)
 print(paragraph - 1)
-
-# shuffle : create randomized paragraphs array
-if args.shuffle:
-    length = sum(1 for _ in tree.iter(t+'bookmark'))
-    new_paragraphs = list(range(1,length+1))
-    random.shuffle(new_paragraphs)
-    # put back kept paragraphs to their own place
-    kept = (args.keep or []) + [1, length]
-    for k in kept:
-        # logging.debug("k="+str(k))
-        a = new_paragraphs[k-1] # value at index k
-        # logging.debug("a="+str(a))
-        b = new_paragraphs.index(k) # index where k is the value
-        # logging.debug("b="+str(b))
-        new_paragraphs[k-1] = k
-        new_paragraphs[b] = a
-    new_paragraphs.insert(0,0)
-    
-    # display new paragraphs order
-    print(new_paragraphs)
 
 # create turn to's
 for p in tree.iter(t+'p'): # noeud "paragraph"
@@ -188,11 +170,33 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                     number,
                     ''.join(p.itertext())
                 )
+                if args.shuffle:
+                    logging.warning('Section %s will be excluded from the shuffle to avoid further incidents.', number)
+                    bugged_sections.append(int(number))
         
         logging.debug("p = " + show(p))
 
 # shuffle ------------------------------------------
 if args.shuffle:
+    # shuffle : create randomized paragraphs array
+    length = sum(1 for _ in tree.iter(t+'bookmark'))
+    new_paragraphs = list(range(1,length+1))
+    random.shuffle(new_paragraphs)
+    # put back kept paragraphs to their own place
+    kept = (args.keep or []) + [1, length] + bugged_sections
+    for k in kept:
+        # logging.debug("k="+str(k))
+        a = new_paragraphs[k-1] # value at index k
+        # logging.debug("a="+str(a))
+        b = new_paragraphs.index(k) # index where k is the value
+        # logging.debug("b="+str(b))
+        new_paragraphs[k-1] = k
+        new_paragraphs[b] = a
+    new_paragraphs.insert(0,0)
+
+    # display new paragraphs order
+    print(new_paragraphs)
+
     paragraph=0
     blocks = []
     block = []
