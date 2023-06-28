@@ -46,6 +46,13 @@ The script returns the new range of your paragraphs as a table of numbers. By de
 python odt.hyperAVH.py --EN my_gamebook.odt --shuffle --keep 156 287 342
 ```
 
+## Technical documentation (only relevant if you plan to change the code of the script)
+### Running tests
+```
+python -m unittest discover
+```
+
+
 # diagAVH
 Generate a visual diagram from a gamebook previously processed by hyperAVH.
 ## Prerequisites
