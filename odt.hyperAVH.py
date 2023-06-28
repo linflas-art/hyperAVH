@@ -134,6 +134,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
     if numbers:
         # reverse processing
         for number in reversed(numbers):
+            number_found = False
             logging.debug("RENVOI = "+number)
             # process child nodes if needed
             for c in p.findall('.//'):
@@ -142,6 +143,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                 if c.tail:
                     logging.debug("cTAIL = "+c.tail)
                     if number in c.tail:
+                        number_found = True
                         logging.debug("cTAIL! = "+c.tail)
                         i = c.getparent().index(c)
                         m = re.match("(.*\D*)" + number + "(\D*)",c.tail)
@@ -153,6 +155,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                 if c.text:
                     logging.debug("cTEXT = "+c.text)
                     if number in c.text:
+                        number_found = True
                         logging.debug("cTEXT! = "+c.text)
                         m = re.match("(.*\D*)" + number + "(\D*)",c.text)
                         try: # an AttributeError may happen if number is substring of another (longer) number
@@ -171,6 +174,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
             if p.text:
                 logging.debug("pTEXT = "+p.text)
                 if number in p.text:
+                    number_found = True
                     logging.debug("pTEXT! = "+p.text)
                     m = re.match("(.*\D*)" + number + "(\D*)",p.text)
                     before = m.group(1)
@@ -178,6 +182,12 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                     link = hyperlink(number,after)
                     p.insert(0,link)
                     p.text = before
+            if not number_found:
+                logging.error(
+                    'Could not generate hyperlinkg pointing to section %s in sentence "%s". Please add it by hand.',
+                    number,
+                    ''.join(p.itertext())
+                )
         
         logging.debug("p = " + show(p))
 
