@@ -13,6 +13,7 @@ import argparse
 import os
 import random
 import array
+import avhparser
 
 # -------- functions --------
 
@@ -55,12 +56,12 @@ parser.add_argument("--keep", nargs='+', type=int, help="when shuffle is on, kee
 parser.add_argument("--debug", action="store_true", help="turn on DEBUG logging (for developers)")
 args = parser.parse_args()
 
+locale = 'fr'
+remove_links_message = "Veuillez supprimer les hyperliens existants du document :"
+
 if args.EN:
-    turn_to_regexp = "([Tt]urn[ing]*\s+to\s+)(\d+)"
+    locale = 'en'
     remove_links_message = "Please remove existing hyperlinks from document:"
-else:
-    turn_to_regexp = "([\s\(]au\s+)(\d+)"
-    remove_links_message = "Veuillez supprimer les hyperliens existants du document :"
 
 if args.debug:
     logging.basicConfig(level=logging.DEBUG)
@@ -125,10 +126,8 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
     numbers = []
     txt = ''.join(p.itertext()) # p.xpath("text()"):
     logging.debug(txt)
-    for m in re.finditer(turn_to_regexp,txt):
-        turn_to = m.group(1)
-        number = m.group(2)
-        numbers.append(number)
+
+    numbers = avhparser.find_numbers(txt, locale)
 
     # update 'p' node if turn_to found
     if numbers:
