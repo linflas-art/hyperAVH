@@ -54,6 +54,7 @@ parser.add_argument("--EN", action="store_true", help="find english 'turn to' ex
 parser.add_argument("--shuffle", action="store_true", help="shuffle paragraphs")
 parser.add_argument("--keep", nargs='+', type=int, help="when shuffle is on, keep the ones listed in place (default 1 <LAST>)")
 parser.add_argument("--debug", action="store_true", help="turn on DEBUG logging (for developers)")
+parser.add_argument("--prefix", help="custom prefix before wannabe hyperlinks")
 args = parser.parse_args()
 
 locale = 'fr'
@@ -127,7 +128,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
     txt = ''.join(p.itertext()) # p.xpath("text()"):
     logging.debug(txt)
 
-    numbers = avhparser.find_numbers(txt, locale)
+    numbers = avhparser.find_numbers(txt, locale=locale, prefix=args.prefix)
 
     # update 'p' node if turn_to found
     if numbers:

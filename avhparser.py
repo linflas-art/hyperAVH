@@ -1,17 +1,24 @@
 import re
 
-def turn_to_regexp(locale):
+def default_locale_prefix(locale):
     if locale == 'en':
-        return "([Tt]urn[ing]*\s+to\s+)(\d+)"
+        return "([Tt]urn[ing]*\s+to\s+)"
     if locale == 'fr':
-        return "([\s\(]au\s+)(\d+)"
+        return "([\s\(]au\s+)"
     raise ValueError(f'Unrecognized locale: "{locale}"')
 
-def find_numbers(txt, locale):
+def prefix(kwargs):
+    if "prefix" in kwargs and kwargs["prefix"]:
+        return kwargs["prefix"]
+    if "locale" in kwargs and kwargs["locale"]:
+        return default_locale_prefix(kwargs["locale"])
+    raise ValueError('Please provide a locale or an explicit prefix')
+
+def find_numbers(txt, **kwargs):
     numbers = []
-    for m in re.finditer(turn_to_regexp(locale), txt):
-        turn_to = m.group(1)
-        number = m.group(2)
+    regexp = prefix(kwargs) + "(\d+)"
+    for m in re.finditer(regexp, txt):
+        number = m.group(m.lastindex)
         numbers.append(number)
     return numbers
 
