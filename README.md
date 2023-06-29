@@ -55,7 +55,7 @@ Said prefixes can technically be a [regular expression](https://en.wikipedia.org
 ## Technical documentation (only relevant if you plan to change the code of the script)
 ### Running tests
 ```
-python -m unittest discover avh
+python -m unittest discover tests
 ```
 
 # diagAVH

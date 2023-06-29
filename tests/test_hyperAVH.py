@@ -1,5 +1,18 @@
 import unittest
-from parser import find_numbers
+
+# Dark magic to deal with the fact Python really doesn't like for files to have dots in their name
+# Ref: https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly
+import importlib.util
+import sys
+import os
+module_name="hyperavh"
+file_path = os.path.dirname(os.path.realpath(__file__))+"/../odt.hyperAVH.py"
+spec = importlib.util.spec_from_file_location(module_name, file_path)
+module = importlib.util.module_from_spec(spec)
+sys.modules[module_name] = module
+spec.loader.exec_module(module)
+
+from hyperavh import find_numbers
 
 class TestAvhParserFr(unittest.TestCase):
     def assertParse(self, txt, result):
