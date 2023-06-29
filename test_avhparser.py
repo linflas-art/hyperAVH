@@ -34,7 +34,7 @@ class TestAvhParserZh(unittest.TestCase):
     def test_not_supported(self):
         with self.assertRaises(ValueError) as cm:
             find_numbers("Imagine it's actually Chinese there.", locale='zh')
-        self.assertEqual(str(cm.exception), 'Unrecognized locale: "zh"')
+        self.assertEqual(str(cm.exception), 'Unsupported locale: "zh"')
 
 class TestAvhParserCustom(unittest.TestCase):
     def assertParse(self, txt, prefix, result):

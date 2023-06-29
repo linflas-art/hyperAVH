@@ -5,7 +5,7 @@ def default_locale_prefix(locale):
         return "([Tt]urn[ing]*\s+to\s+)"
     if locale == 'fr':
         return "([\s\(]au\s+)"
-    raise ValueError(f'Unrecognized locale: "{locale}"')
+    raise ValueError(f'Unsupported locale: "{locale}"')
 
 def prefix(kwargs):
     if "prefix" in kwargs and kwargs["prefix"]:
