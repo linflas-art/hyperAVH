@@ -165,13 +165,10 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
                     p.insert(0,link)
                     p.text = before
             if not number_found:
-                logging.error(
-                    'Could not generate hyperlinkg pointing to section %s in sentence "%s". Please add it by hand.',
-                    number,
-                    ''.join(p.itertext())
-                )
+                sentence = ''.join(p.itertext())
+                logging.error(f'Could not generate hyperlinkg pointing to section {number} in sentence "{sentence}". Please add it by hand.')
                 if args.shuffle:
-                    logging.warning('Section %s will be excluded from the shuffle to avoid further incidents.', number)
+                    logging.warning(f'Section {number} will be excluded from the shuffle to avoid further incidents.')
                     bugged_sections.append(int(number))
         
         logging.debug("p = " + show(p))
