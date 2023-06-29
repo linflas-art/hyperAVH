@@ -30,3 +30,9 @@ class TestAvhParserEn(unittest.TestCase):
     def test_irrelevant_number(self):
         self.assertParse("That orc ate 66 pies! Note it, it might be relevant later.", [])
 
+class TestAvhParserZh(unittest.TestCase):
+    def test_not_supported(self):
+        with self.assertRaises(ValueError) as cm:
+            find_numbers("Imagine it's actually Chinese there.", 'zh')
+        self.assertEqual(str(cm.exception), 'Unrecognized locale: "zh"')
+

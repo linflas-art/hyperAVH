@@ -3,7 +3,9 @@ import re
 def turn_to_regexp(locale):
     if locale == 'en':
         return "([Tt]urn[ing]*\s+to\s+)(\d+)"
-    return "([\s\(]au\s+)(\d+)"
+    if locale == 'fr':
+        return "([\s\(]au\s+)(\d+)"
+    raise ValueError(f'Unrecognized locale: "{locale}"')
 
 def find_numbers(txt, locale):
     numbers = []
