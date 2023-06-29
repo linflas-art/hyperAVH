@@ -58,7 +58,6 @@ Said prefixes can technically be a [regular expression](https://en.wikipedia.org
 python -m unittest discover
 ```
 
-
 # diagAVH
 Generate a visual diagram from a gamebook previously processed by hyperAVH.
 ## Prerequisites
