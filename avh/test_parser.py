@@ -1,5 +1,5 @@
 import unittest
-from avhparser import find_numbers
+from parser import find_numbers
 
 class TestAvhParserFr(unittest.TestCase):
     def assertParse(self, txt, result):

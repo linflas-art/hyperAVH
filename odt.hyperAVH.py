@@ -13,7 +13,7 @@ import argparse
 import os
 import random
 import array
-import avhparser
+from avh.parser import find_numbers
 
 # -------- functions --------
 
@@ -128,7 +128,7 @@ for p in tree.iter(t+'p'): # noeud "paragraph"
     txt = ''.join(p.itertext()) # p.xpath("text()"):
     logging.debug(txt)
 
-    numbers = avhparser.find_numbers(txt, locale=locale, prefix=args.prefix)
+    numbers = find_numbers(txt, locale=locale, prefix=args.prefix)
 
     # update 'p' node if turn_to found
     if numbers:
