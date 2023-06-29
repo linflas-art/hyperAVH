@@ -85,7 +85,7 @@ if __name__ == '__main__':
     remove_links_message = "Veuillez supprimer les hyperliens existants du document :"
 
     if args.EN:
-        locale = 'en'
+        local = 'en'
         remove_links_message = "Please remove existing hyperlinks from document:"
 
     if args.debug:
@@ -118,6 +118,8 @@ if __name__ == '__main__':
             print(h.getparent().text + h.text)
         quit()
 
+    bugged_sections = []
+
     # create bookmarks into 'heading' nodes, then 'paragraph' nodes
     paragraph = 1
     search = t + 'h'
@@ -126,29 +128,8 @@ if __name__ == '__main__':
     paragraph = bookmarks(search, paragraph)
     print(paragraph - 1)
 
-    # shuffle : create randomized paragraphs array
-    if args.shuffle:
-        length = sum(1 for _ in tree.iter(t+'bookmark'))
-        new_paragraphs = list(range(1,length+1))
-        random.shuffle(new_paragraphs)
-        # put back kept paragraphs to their own place
-        kept = (args.keep or []) + [1, length]
-        for k in kept:
-            # logging.debug("k="+str(k))
-            a = new_paragraphs[k-1] # value at index k
-            # logging.debug("a="+str(a))
-            b = new_paragraphs.index(k) # index where k is the value
-            # logging.debug("b="+str(b))
-            new_paragraphs[k-1] = k
-            new_paragraphs[b] = a
-        new_paragraphs.insert(0,0)
-        
-        # display new paragraphs order
-        print(new_paragraphs)
-
     # create turn to's
     for p in tree.iter(t+'p'): # noeud "paragraph"
-        numbers = []
         txt = ''.join(p.itertext()) # p.xpath("text()"):
         logging.debug(txt)
 
@@ -158,6 +139,7 @@ if __name__ == '__main__':
         if numbers:
             # reverse processing
             for number in reversed(numbers):
+                number_found = False
                 logging.debug("RENVOI = "+number)
                 # process child nodes if needed
                 for c in p.findall('.//'):
@@ -166,6 +148,7 @@ if __name__ == '__main__':
                     if c.tail:
                         logging.debug("cTAIL = "+c.tail)
                         if number in c.tail:
+                            number_found = True
                             logging.debug("cTAIL! = "+c.tail)
                             i = c.getparent().index(c)
                             m = re.match("(.*\D*)" + number + "(\D*)",c.tail)
@@ -177,6 +160,7 @@ if __name__ == '__main__':
                     if c.text:
                         logging.debug("cTEXT = "+c.text)
                         if number in c.text:
+                            number_found = True
                             logging.debug("cTEXT! = "+c.text)
                             m = re.match("(.*\D*)" + number + "(\D*)",c.text)
                             try: # an AttributeError may happen if number is substring of another (longer) number
@@ -195,6 +179,7 @@ if __name__ == '__main__':
                 if p.text:
                     logging.debug("pTEXT = "+p.text)
                     if number in p.text:
+                        number_found = True
                         logging.debug("pTEXT! = "+p.text)
                         m = re.match("(.*\D*)" + number + "(\D*)",p.text)
                         before = m.group(1)
@@ -202,11 +187,36 @@ if __name__ == '__main__':
                         link = hyperlink(number,after)
                         p.insert(0,link)
                         p.text = before
+                if not number_found:
+                    sentence = ''.join(p.itertext())
+                    logging.error(f'Could not generate hyperlinkg pointing to section {number} in sentence "{sentence}". Please add it by hand.')
+                    if args.shuffle:
+                        logging.warning(f'Section {number} will be excluded from the shuffle to avoid further incidents.')
+                        bugged_sections.append(int(number))
             
             logging.debug("p = " + show(p))
 
     # shuffle ------------------------------------------
     if args.shuffle:
+        # shuffle : create randomized paragraphs array
+        length = sum(1 for _ in tree.iter(t+'bookmark'))
+        new_paragraphs = list(range(1,length+1))
+        random.shuffle(new_paragraphs)
+        # put back kept paragraphs to their own place
+        kept = (args.keep or []) + [1, length] + bugged_sections
+        for k in kept:
+            # logging.debug("k="+str(k))
+            a = new_paragraphs[k-1] # value at index k
+            # logging.debug("a="+str(a))
+            b = new_paragraphs.index(k) # index where k is the value
+            # logging.debug("b="+str(b))
+            new_paragraphs[k-1] = k
+            new_paragraphs[b] = a
+        new_paragraphs.insert(0,0)
+
+        # display new paragraphs order
+        print(new_paragraphs)
+
         paragraph=0
         blocks = []
         block = []
