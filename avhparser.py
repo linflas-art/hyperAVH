@@ -2,9 +2,9 @@ import re
 
 def default_locale_prefix(locale):
     if locale == 'en':
-        return "([Tt]urn[ing]*\s+to\s+)"
+        return "([Tt]urn[ing]*\s+to)"
     if locale == 'fr':
-        return "([\s\(]au\s+)"
+        return "([\s\(]au)"
     raise ValueError(f'Unsupported locale: "{locale}"')
 
 def prefix(kwargs):
@@ -16,7 +16,7 @@ def prefix(kwargs):
 
 def find_numbers(txt, **kwargs):
     numbers = []
-    regexp = prefix(kwargs) + "(\d+)"
+    regexp = prefix(kwargs) + "\s*(\d+)"
     for m in re.finditer(regexp, txt):
         number = m.group(m.lastindex)
         numbers.append(number)

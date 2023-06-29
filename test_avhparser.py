@@ -41,8 +41,8 @@ class TestAvhParserCustom(unittest.TestCase):
         self.assertEqual(find_numbers(txt, prefix=prefix), list(map(str, result)))
 
     def test_some_arrow(self):
-        self.assertParse("– J’ai failli mourir un paquet de fois, ça compte ? Par le feu (→ 18), par le ridicule (→ 22)…", "→ ", [18, 22])
+        self.assertParse("– J’ai failli mourir un paquet de fois, ça compte ? Par le feu (→ 18), par le ridicule (→ 22)…", "→", [18, 22])
 
     def test_simple_regex_prefix(self):
-        self.assertParse("– Si tu insistes, on peut arrêter là (→ 16). Mais tu te prives peut-être d’éléments cruciaux que tu aurais découvert en continuant encore un peu (→ ⧗, 3).", "→( ⧗,)? ", [16, 3])
+        self.assertParse("– Si tu insistes, on peut arrêter là (→ 16). Mais tu te prives peut-être d’éléments cruciaux que tu aurais découvert en continuant encore un peu (→ ⧗, 3).", "→( ⧗,)?", [16, 3])
 
