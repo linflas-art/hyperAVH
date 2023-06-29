@@ -46,6 +46,12 @@ The script returns the new range of your paragraphs as a table of numbers. By de
 python odt.hyperAVH.py --EN my_gamebook.odt --shuffle --keep 156 287 342
 ```
 
+- If you use a different syntax than the usual "turn to" for your references, for example if you put a ↪ before them (as in "Fight (↪ 12)? Or flee (↪ 23)?"), this is covered through the `--prefix` parameter:
+```
+python odt.hyperAVH.py mon_AVH.odt --prefix="↪"
+```
+Said prefixes can technically be a [regular expression](https://en.wikipedia.org/wiki/Regular_expression). If you use one though, we'll take for granted that you know what you're doing and can handle relevant issues on your own.
+
 ## Technical documentation (only relevant if you plan to change the code of the script)
 ### Running tests
 ```
