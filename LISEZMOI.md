@@ -46,6 +46,12 @@ Le script renvoie le nouvel ordonnancement de vos paragraphes sous forme d'une l
 python odt.hyperAVH.py mon_AVH.odt --shuffle --keep 156 287 342
 ```
 
+- Si vos renvois sont précédés d'autres choses que d'un "(rendez-vous ) au", par exemple si vous utilisez le symbole ↪ ("Voulez-vous combattre (↪ 12) ? Ou fuir (↪ 23) ?"), vous pouvez le préciser à l'aide la syntaxe suivante :
+```
+python odt.hyperAVH.py mon_AVH.odt --prefix="↪"
+```
+Les [expressions régulières](https://fr.wikipedia.org/wiki/Expression_r%C3%A9guli%C3%A8re) sont techniquement supportées. Après, si vous en utilisez, on considère que vous savez ce que vous faites, et que vous assumez l'entière responsabilité de tous les problèmes éventuels.
+
 # diagAVH
 Génération d'un diagramme d'AVH (Aventure dont Vous êtes le Héros) à partir d'un document modifié par hyperAVH
 ## Prérequis
