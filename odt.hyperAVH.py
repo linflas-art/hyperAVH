@@ -162,15 +162,18 @@ if __name__ == '__main__':
                         if number in c.text:
                             number_found = True
                             logging.debug("cTEXT! = "+c.text)
-                            m = re.match("(.*\D*)" + number + "(\D*)",c.text)
+                            m = re.match("(\D*)" + number + "(\D*)",c.text)
                             try: # an AttributeError may happen if number is substring of another (longer) number
                                 before = m.group(1)
                                 after = m.group(2)
                                 link = hyperlink(number,after)
                                 if before or after:
+                                    logging.debug("before "+ before)
+                                    logging.debug("after "+ after)
                                     c.insert(0,link)
                                     c.text = before
-                                else: # if node contains just the number, replace it by the hyperlink
+                                elif c.text == number: # if node contains just the number, replace it by the hyperlink
+                                    logging.debug("only number "+number)
                                     link.tail = c.tail
                                     c.getparent().replace(c,link)
                             except AttributeError:
@@ -189,7 +192,7 @@ if __name__ == '__main__':
                         p.text = before
                 if not number_found:
                     sentence = ''.join(p.itertext())
-                    logging.error(f'Could not generate hyperlinkg pointing to section {number} in sentence "{sentence}". Please add it by hand.')
+                    logging.error(f'Could not generate hyperlink pointing to section {number} in sentence "{sentence}". Please add it by hand.')
                     if args.shuffle:
                         logging.warning(f'Section {number} will be excluded from the shuffle to avoid further incidents.')
                         bugged_sections.append(int(number))
