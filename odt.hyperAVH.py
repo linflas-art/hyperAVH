@@ -83,10 +83,12 @@ if __name__ == '__main__':
 
     locale = 'fr'
     remove_links_message = "Veuillez supprimer les hyperliens existants du document :"
+    remove_bookmarks_message = "Veuillez supprimer tous les repères de texte du document."
 
     if args.EN:
         local = 'en'
         remove_links_message = "Please remove existing hyperlinks from document:"
+        remove_bookmarks_message = "Please remove all bookmarks from document."
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -108,7 +110,7 @@ if __name__ == '__main__':
     x = '{' + nsmap['xlink'] + '}'
     o = '{' + nsmap['office'] + '}'
 
-    # quit if hyperlinks are already present
+    # quit if hyperlinks/bookmarks are already present
     links = []
     for h in tree.iter(t+'a'):
         links.append(h)
@@ -117,6 +119,12 @@ if __name__ == '__main__':
         for h in links:
             print(h.getparent().text + h.text)
         quit()
+    bkmarks = []
+    for h in tree.iter(t+'bookmark'):
+        bkmarks.append(h)
+    if bkmarks:
+        print(remove_bookmarks_message)
+        quit()        
 
     bugged_sections = []
 
