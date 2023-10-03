@@ -45,6 +45,27 @@ def hyperlink(number,tail):
     link.tail = tail
     return link
 
+# isolate link from text element
+def isolate_link(number,text):
+    m = re.search("(.*\D+)" + number + "(\D+.*)",text)
+    try:
+        before = m.group(1)
+        after = m.group(2)
+        logging.debug("BEFORE "+ before)
+        logging.debug("AFTER "+ after)
+        return before, after
+    except AttributeError:
+        m = re.search("(.*)" + number + "(.*)",text)
+        before = m.group(1)
+        after = m.group(2)
+        logging.debug("BEFORE "+ before)
+        logging.debug("AFTER "+ after)
+        if re.search("\d$",before) or re.search("^\d",after): # skip when number is substring of another number
+            logging.debug("SKIP " + number)
+            return "SKIP", "SKIP"
+        else:
+            return before, after
+            
 def default_locale_prefix(locale):
     if locale == 'en':
         return "([Tt]urn[ing]*\s+to)"
@@ -59,10 +80,10 @@ def prefix(kwargs):
         return default_locale_prefix(kwargs["locale"])
     raise ValueError('Please provide a locale or an explicit prefix')
 
-def find_numbers(txt, **kwargs):
+def find_numbers(sentence, **kwargs):
     numbers = []
     regexp = prefix(kwargs) + "\s*(\d+)"
-    for m in re.finditer(regexp, txt):
+    for m in re.finditer(regexp, sentence):
         number = m.group(m.lastindex)
         numbers.append(number)
     return numbers
@@ -86,7 +107,7 @@ if __name__ == '__main__':
     remove_bookmarks_message = "Veuillez supprimer tous les repères de texte du document."
 
     if args.EN:
-        local = 'en'
+        locale = 'en'
         remove_links_message = "Please remove existing hyperlinks from document:"
         remove_bookmarks_message = "Please remove all bookmarks from document."
 
@@ -138,68 +159,58 @@ if __name__ == '__main__':
 
     # create turn to's
     for p in tree.iter(t+'p'): # noeud "paragraph"
-        txt = ''.join(p.itertext()) # p.xpath("text()"):
-        logging.debug(txt)
-
-        numbers = find_numbers(txt, locale=locale, prefix=args.prefix)
-
+        logging.debug('P ================================================')
+        logging.debug(show(p))
+        sentence = ''.join(p.itertext())
+        numbers = find_numbers(sentence, locale=locale, prefix=args.prefix)
+        logging.debug(numbers)
         # update 'p' node if turn_to found
         if numbers:
             # reverse processing
             for number in reversed(numbers):
-                number_found = False
-                logging.debug("RENVOI = "+number)
-                # process child nodes if needed
-                for c in p.findall('.//'):
-                    #logging.debug(c)
-                    #logging.debug("c = " + etree.tostring(c).decode('utf-8'))
-                    if c.tail:
+                logging.debug(number + " ---------------------------------------------------")
+                done = False
+                # process child nodes first
+                for c in p.xpath('*'):
+                    logging.debug("c = " + show(c))
+                    if c.tail and not done:
                         logging.debug("cTAIL = "+c.tail)
                         if number in c.tail:
-                            number_found = True
-                            logging.debug("cTAIL! = "+c.tail)
+                            logging.debug("cTAIL !!! = "+c.tail)
                             i = c.getparent().index(c)
-                            m = re.match("(.*\D*)" + number + "(\D*)",c.tail)
-                            before = m.group(1)
-                            after = m.group(2)
-                            link = hyperlink(number,after)
-                            c.getparent().insert(i+1,link)
-                            c.tail = before
-                    if c.text:
+                            before, after = isolate_link(number,c.tail)
+                            if before != "SKIP":
+                                link = hyperlink(number,after)
+                                c.getparent().insert(i+1,link)
+                                c.tail = before
+                                logging.debug("DONE " + number)
+                                done = True
+                    if c.text and not done:
                         logging.debug("cTEXT = "+c.text)
                         if number in c.text:
-                            number_found = True
-                            logging.debug("cTEXT! = "+c.text)
-                            m = re.match("(\D*)" + number + "(\D*)",c.text)
-                            try: # an AttributeError may happen if number is substring of another (longer) number
-                                before = m.group(1)
-                                after = m.group(2)
+                            logging.debug("cTEXT !!! = "+c.text)
+                            before, after = isolate_link(number,c.text)
+                            if not (before and after) and c.get(x+'href'):
+                                logging.debug("SKIP " + number)
+                            elif before != "SKIP":
                                 link = hyperlink(number,after)
-                                if before or after:
-                                    logging.debug("before "+ before)
-                                    logging.debug("after "+ after)
-                                    c.insert(0,link)
-                                    c.text = before
-                                elif c.text == number: # if node contains just the number, replace it by the hyperlink
-                                    logging.debug("only number "+number)
-                                    link.tail = c.tail
-                                    c.getparent().replace(c,link)
-                            except AttributeError:
-                                pass
-                # process on 'p' node text directly if needed
-                if p.text:
+                                c.insert(0,link)
+                                c.text = before
+                                logging.debug("DONE " + number)
+                                done = True
+                # process current 'p' node
+                if p.text and not done:
                     logging.debug("pTEXT = "+p.text)
                     if number in p.text:
-                        number_found = True
-                        logging.debug("pTEXT! = "+p.text)
-                        m = re.match("(.*\D*)" + number + "(\D*)",p.text)
-                        before = m.group(1)
-                        after = m.group(2)
-                        link = hyperlink(number,after)
-                        p.insert(0,link)
-                        p.text = before
-                if not number_found:
-                    sentence = ''.join(p.itertext())
+                        logging.debug("pTEXT !!! = "+p.text)
+                        before, after = isolate_link(number,p.text)
+                        if before != "SKIP":
+                            link = hyperlink(number,after)
+                            p.insert(0,link)
+                            p.text = before
+                            logging.debug("DONE " + number)
+                            done = True
+                if not done:
                     logging.error(f'Could not generate hyperlink pointing to section {number} in sentence "{sentence}". Please add it by hand.')
                     if args.shuffle:
                         logging.warning(f'Section {number} will be excluded from the shuffle to avoid further incidents.')
@@ -207,7 +218,8 @@ if __name__ == '__main__':
             
             logging.debug("p = " + show(p))
 
-    # shuffle ------------------------------------------
+    # -------- shuffle --------
+    
     if args.shuffle:
         # shuffle : create randomized paragraphs array
         length = sum(1 for _ in tree.iter(t+'bookmark'))
