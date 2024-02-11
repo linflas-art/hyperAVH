@@ -46,11 +46,12 @@ t = '{' + nsmap['text'] + '}'
 lfound=0
 bfound=0
 for l in tree.iter(t+'a'):
-    logging.debug(l.text)
     try:
-        if re.match("^\d+$",l.text):
-            lfound += 1
-    except TypeError:
+        for tx in l.itertext():
+            logging.debug(tx)
+            if re.match("^\d+$",tx):
+                lfound += 1
+    except TypeError: # weird content, must be checked
         print(tempdir)
         quit()
 for b in tree.iter(t+'bookmark'):
@@ -72,16 +73,19 @@ for e in tree.iter():
         if chars:
             get_next_text = True
     # create node and include part of text that follows
-    if e.text and get_next_text and e.tag == t + 'p':
-        logging.debug(section+":"+e.text)
-        extract = e.text[0:chars]
+    if get_next_text and e.tag == t + 'p':
+        extract = ''.join(e.itertext())[0:chars]
+        logging.debug(section+":"+extract)
         gvtext = ''.join(char if idx % 25 or idx == 0 else char+'\n' for idx,
               char in enumerate(extract)) + "..."
         dot.node(section,section+"\n"+gvtext)
         get_next_text = False
     # construct edges between nodes
     if e.tag == t + 'a':
-        dot.edge(section,e.text)
+        for tx in e.itertext():
+            logging.debug(tx)
+            if re.match("^\d+$",tx):
+                dot.edge(section,tx)
 
 # render diagram
 dot.format = 'svg'
