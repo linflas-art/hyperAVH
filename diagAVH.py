@@ -48,7 +48,7 @@ bfound=0
 for l in tree.iter(t+'a'):
     try:
         for tx in l.itertext():
-            logging.debug(tx)
+            # logging.debug(tx)
             if re.match("^\d+$",tx):
                 lfound += 1
     except TypeError: # weird content, must be checked
@@ -68,7 +68,7 @@ get_next_text = False
 # main loop
 for e in tree.iter():
     # search section number
-    if e.tag == t + 'bookmark':
+    if e.tag == t + 'bookmark' or e.tag == t + 'bookmark-start':
         section = e.get(t+'name')
         if chars:
             get_next_text = True
@@ -82,10 +82,10 @@ for e in tree.iter():
         get_next_text = False
     # construct edges between nodes
     if e.tag == t + 'a':
-        for tx in e.itertext():
-            logging.debug(tx)
-            if re.match("^\d+$",tx):
-                dot.edge(section,tx)
+        for l in e.attrib.values():
+            if re.match("^#\d+$",l):
+                logging.debug(section + " > " + l)
+                dot.edge(section,l[1:])
 
 # render diagram
 dot.format = 'svg'
