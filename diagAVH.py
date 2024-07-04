@@ -45,11 +45,11 @@ t = '{' + nsmap['text'] + '}'
 # quit if hyperlinks or bookmarks are missing or not accurate
 lfound=0
 bfound=0
-for l in tree.iter(t+'a'):
+for link in tree.iter(t+'a'):
     try:
-        for tx in l.itertext():
-            # logging.debug(tx)
-            if re.match("^\d+$",tx):
+        logging.debug(link.attrib.values())
+        for href in link.attrib.values():
+            if re.match("^#\d+$",href):
                 lfound += 1
     except TypeError: # weird content, must be checked
         print(tempdir)
@@ -82,10 +82,10 @@ for e in tree.iter():
         get_next_text = False
     # construct edges between nodes
     if e.tag == t + 'a':
-        for l in e.attrib.values():
-            if re.match("^#\d+$",l):
-                logging.debug(section + " > " + l)
-                dot.edge(section,l[1:])
+        for href in e.attrib.values():
+            if re.match("^#\d+$",href):
+                logging.debug(section + " > " + href)
+                dot.edge(section,href[1:])
 
 # render diagram
 dot.format = 'svg'
