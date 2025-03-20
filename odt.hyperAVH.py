@@ -322,6 +322,8 @@ if __name__ == '__main__':
         while paragraph < length:
             foundnextbkm = False
             for e in tree.iter():
+                if paragraph >= length:
+                    break
                 if e.tag == t +'p' or e.tag == t +'h':
                     for ee in e.iter():
                         if ee.tag == t + 'bookmark':
